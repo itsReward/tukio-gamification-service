@@ -29,7 +29,7 @@ data class Leaderboard(
     val isActive: Boolean = true,
 
     @Column(nullable = false)
-    val lastUpdated: LocalDateTime = LocalDateTime.now()
+    var lastUpdated: LocalDateTime = LocalDateTime.now()
 )
 
 enum class TimeFrame {
