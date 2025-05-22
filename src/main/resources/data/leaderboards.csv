@@ -1,0 +1,8 @@
+id,name,description,time_frame,category,event_category_id,is_active,last_updated
+1,"Weekly Overall","Top users for weekly overall points leaderboard","WEEKLY","OVERALL",null,true,"2024-04-26 15:45:00"
+2,"Monthly Overall","Top users for monthly overall points leaderboard","MONTHLY","OVERALL",null,true,"2024-04-26 15:45:00"
+3,"All-Time Overall","Top users for all-time overall points leaderboard","ALL_TIME","OVERALL",null,true,"2024-04-26 15:45:00"
+4,"Weekly Attendance","Top users for weekly event attendance leaderboard","WEEKLY","EVENT_ATTENDANCE",null,true,"2024-04-26 15:45:00"
+5,"Monthly Attendance","Top users for monthly event attendance leaderboard","MONTHLY","EVENT_ATTENDANCE",null,true,"2024-04-26 15:45:00"
+6,"Academic Events","Top users for academic events leaderboard","ALL_TIME","CATEGORY_SPECIFIC",1,true,"2024-04-26 15:45:00"
+7,"Workshop Events","Top users for workshop events leaderboard","ALL_TIME","CATEGORY_SPECIFIC",5,true,"2024-04-26 15:45:00"

@@ -2,7 +2,9 @@ package com.tukio.gamificationservice.client
 
 import com.tukio.gamificationservice.dto.EventDTO
 import com.tukio.gamificationservice.dto.EventCategoryDTO
+import feign.RequestInterceptor
 import org.springframework.cloud.openfeign.FeignClient
+import org.springframework.context.annotation.Bean
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 
@@ -14,4 +16,6 @@ interface EventServiceClient {
 
     @GetMapping("/api/event-categories/{id}")
     fun getEventCategoryById(@PathVariable("id") categoryId: Long): EventCategoryDTO
+
+
 }

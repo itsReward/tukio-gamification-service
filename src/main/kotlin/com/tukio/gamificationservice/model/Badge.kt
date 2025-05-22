@@ -21,9 +21,11 @@ data class Badge(
     @Column(nullable = false)
     val requiredPoints: Int,
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val category: BadgeCategory,
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val tier: BadgeTier
 )

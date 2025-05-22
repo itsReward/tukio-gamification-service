@@ -16,9 +16,11 @@ data class Leaderboard(
     @Column(nullable = false)
     val description: String,
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val timeFrame: TimeFrame,
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val category: LeaderboardCategory,
 

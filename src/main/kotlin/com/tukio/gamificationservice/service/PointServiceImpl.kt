@@ -1,5 +1,7 @@
 package com.tukio.gamificationservice.service
 
+import com.tukio.gamificationservice.client.NotificationRequestDTO
+import com.tukio.gamificationservice.client.NotificationServiceClient
 import com.tukio.gamificationservice.dto.BadgeDTO
 import com.tukio.gamificationservice.dto.PointTransactionDTO
 import com.tukio.gamificationservice.dto.PointTransactionResponseDTO
@@ -11,6 +13,7 @@ import com.tukio.gamificationservice.model.UserPoints
 import com.tukio.gamificationservice.repository.PointTransactionRepository
 import com.tukio.gamificationservice.repository.UserPointsRepository
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.scheduling.annotation.Scheduled
@@ -29,6 +32,8 @@ class PointServiceImpl(
     private val userPointsRepository: UserPointsRepository,
     private val badgeService: BadgeService
 ) : PointService {
+    @Autowired
+    private lateinit var notificationServiceClient: NotificationServiceClient
 
     private val logger = LoggerFactory.getLogger(PointServiceImpl::class.java)
 
@@ -112,6 +117,27 @@ class PointServiceImpl(
             userPoints.monthlyPoints += levelUpPoints
             userPoints.weeklyPoints += levelUpPoints
             userPointsRepository.save(userPoints)
+
+            // Send level-up notification
+            try {
+                val notificationRequest = NotificationRequestDTO(
+                    userId = transactionDTO.userId,
+                    templateKey = "LEVEL_UP_NOTIFICATION",
+                    templateData = mapOf(
+                        "newLevel" to newLevel.toString(),
+                        "totalPoints" to userPoints.totalPoints.toString(),
+                        "bonusPoints" to levelUpPoints.toString()
+                    ),
+                    channels = listOf("IN_APP", "PUSH"),
+                    notificationType = "SYSTEM_ANNOUNCEMENT",
+                    referenceId = userPoints.id.toString(),
+                    referenceType = "LEVEL_UP"
+                )
+
+                notificationServiceClient.sendNotification(notificationRequest)
+            } catch (e: Exception) {
+                logger.warn("Failed to send level-up notification: ${e.message}")
+            }
         }
 
         logger.info("Added ${transactionDTO.points} points for user ${transactionDTO.userId}, new total: ${userPoints.totalPoints}")

@@ -1,5 +1,7 @@
 package com.tukio.gamificationservice.service
 
+import com.tukio.gamificationservice.client.NotificationRequestDTO
+import com.tukio.gamificationservice.client.NotificationServiceClient
 import com.tukio.gamificationservice.dto.BadgeDTO
 import com.tukio.gamificationservice.dto.UserBadgeDTO
 import com.tukio.gamificationservice.exception.ResourceNotFoundException
@@ -8,6 +10,7 @@ import com.tukio.gamificationservice.repository.BadgeRepository
 import com.tukio.gamificationservice.repository.PointTransactionRepository
 import com.tukio.gamificationservice.repository.UserBadgeRepository
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -18,6 +21,9 @@ class BadgeServiceImpl(
     private val userBadgeRepository: UserBadgeRepository,
     private val pointTransactionRepository: PointTransactionRepository
 ) : BadgeService {
+
+    @Autowired
+    private lateinit var notificationServiceClient: NotificationServiceClient
 
     private val logger = LoggerFactory.getLogger(BadgeServiceImpl::class.java)
 
@@ -78,6 +84,26 @@ class BadgeServiceImpl(
         pointTransactionRepository.save(pointTransaction)
 
         logger.info("Awarded badge '${badge.name}' to user $userId")
+        // Send badge notification
+        try {
+            val notificationRequest = NotificationRequestDTO(
+                userId = userId,
+                templateKey = "BADGE_EARNED_NOTIFICATION",
+                templateData = mapOf(
+                    "badgeName" to badge.name,
+                    "badgeDescription" to badge.description,
+                    "badgeTier" to badge.tier.name
+                ),
+                channels = listOf("IN_APP", "PUSH"),
+                notificationType = "SYSTEM_ANNOUNCEMENT",
+                referenceId = savedUserBadge.id.toString(),
+                referenceType = "BADGE"
+            )
+
+            notificationServiceClient.sendNotification(notificationRequest)
+        } catch (e: Exception) {
+            logger.warn("Failed to send badge notification: ${e.message}")
+        }
 
         return savedUserBadge.toDTO()
     }
